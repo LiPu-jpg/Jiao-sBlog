@@ -1,0 +1,23 @@
+<h2>标签管理</h2>
+<table>
+    <thead>
+        <tr>
+            <th>标签名称</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tag in tags %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td>
+                    <!-- 这里可以加编辑或删除按钮 -->
+                    <form action="/admin/tags/{{ tag.id }}/delete" method="post" style="display:inline;">
+                        <button type="submit">删除</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="/admin/tags/new">创建新标签</a>

@@ -1,0 +1,8 @@
+<h2>创建新标签</h2>
+<form action="/admin/tags" method="post">
+    <div>
+        <label for="name">标签名称</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <button type="submit">提交</button>
+</form>

@@ -167,3 +167,22 @@ pub async fn delete_article(pool: &PgPool, id: i32) -> Result<(), sqlx::Error> {
     tx.commit().await?;
     Ok(())
 }
+
+// 创建标签
+pub async fn create_tag(pool: &PgPool, name: &str) -> Result<(), sqlx::Error> {
+    sqlx::query!(
+        "INSERT INTO tags (name) VALUES ($1)",
+        name
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+// 删除标签
+pub async fn delete_tag(pool: &PgPool, id: i32) -> Result<(), sqlx::Error> {
+    sqlx::query!("DELETE FROM tags WHERE id=$1", id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}

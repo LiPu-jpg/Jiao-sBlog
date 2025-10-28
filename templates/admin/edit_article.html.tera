@@ -1,0 +1,22 @@
+<h2>编辑文章</h2>
+<form action="/admin/articles/{{ article.id }}" method="post">
+    <div>
+        <label for="title">标题</label>
+        <input type="text" id="title" name="title" value="{{ article.title }}" required>
+    </div>
+    <div>
+        <label for="content_md">内容</label>
+        <textarea id="content_md" name="content_md" required>{{ article.content_md }}</textarea>
+    </div>
+    <div>
+        <label for="tags">选择标签</label>
+        <select name="tag_ids" multiple>
+            {% for tag in tags %}
+                <option value="{{ tag.id }}" {% if tag.id in article.tag_ids %} selected {% endif %}>
+                    {{ tag.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">更新</button>
+</form>

@@ -1,0 +1,25 @@
+<h2>文章列表</h2>
+<table>
+    <thead>
+        <tr>
+            <th>标题</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for article in articles %}
+            <tr>
+                <td>{{ article.title }}</td>
+                <td>{{ article.created_at }}</td>
+                <td>
+                    <a href="/admin/articles/{{ article.id }}/edit">编辑</a>
+                    <form action="/admin/articles/{{ article.id }}/delete" method="post" style="display:inline;">
+                        <button type="submit">删除</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="/admin/articles/new">创建新文章</a>

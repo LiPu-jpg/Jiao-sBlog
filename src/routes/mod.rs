@@ -6,3 +6,4 @@ pub mod friends;
 pub mod travel;
 pub mod article;
 pub mod admin;
+pub mod middleware;
