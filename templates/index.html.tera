@@ -1,0 +1,8 @@
+{% extends "base" %}
+
+{% block title %}首页 - 我的博客{% endblock title %}
+
+{% block content %}
+<h1>欢迎来到我的博客 🚀</h1>
+<p>这里是主页内容。</p>
+{% endblock content %}

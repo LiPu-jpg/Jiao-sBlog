@@ -1,0 +1,7 @@
+[default]
+address = "127.0.0.1"
+port = 8000
+log_level = "normal"
+
+[default.databases]
+blog_db = { url = "postgres://postgres:060628@localhost:5432/blog" }

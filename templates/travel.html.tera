@@ -1,0 +1,13 @@
+{% extends "base" %}
+{% block title %}足迹{% endblock title %}
+
+{% block content %}
+<h1>🗺 我的旅行足迹</h1>
+<p>在这里，我记录了自己走过的城市和国家，留下美好的旅行回忆。</p>
+
+<!-- jvectormap 插入点 -->
+<div id="map" style="height: 400px;"></div>
+<script>
+    // 此处插入 jvectormap 初始化代码
+</script>
+{% endblock content %}

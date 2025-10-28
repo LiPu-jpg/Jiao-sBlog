@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{ title | default(value="My Blog") }}{% endblock title %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include "components/sidebar" %}
+    <div class="content">
+        {% block content %}{% endblock content %}
+    </div>
+</body>
+</html>

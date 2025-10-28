@@ -1,0 +1,8 @@
+pub mod index;
+pub mod archive;
+pub mod tags;
+pub mod about;
+pub mod friends;
+pub mod travel;
+pub mod article;
+pub mod admin;

@@ -1,0 +1,17 @@
+{% extends "base" %}
+
+{% block title %}Articles for Tag - My Blog{% endblock %}
+
+{% block content %}
+    <h1>Articles for Selected Tag</h1>
+    <ul>
+        {% for article in articles %}
+            <li>
+                <a href="/articles/{{ article.id }}">
+                    <h2>{{ article.title }}</h2>
+                    <p>{{ article.created_at }}</p>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

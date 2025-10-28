@@ -1,0 +1,12 @@
+{% extends "base" %}
+{% block title %}友链{% endblock title %}
+
+{% block content %}
+<h1>🔗 友情链接</h1>
+<p>以下是我推荐的友情链接：</p>
+
+<ul>
+    <li><a href="https://example.com" target="_blank">Example Blog</a></li>
+    <li><a href="https://another-example.com" target="_blank">Another Blog</a></li>
+</ul>
+{% endblock content %}

@@ -1,0 +1,16 @@
+<div class="sidebar">
+    <img src="/static/avatar.jpg" alt="avatar" class="avatar">
+    <h3>焦子昂</h3>
+    <p>
+        <a href="https://space.bilibili.com/" target="_blank">B站</a> ·
+        <a href="https://github.com/" target="_blank">GitHub</a>
+    </p>
+    <ul>
+        <li><a href="/">🏠 首页</a></li>
+        <li><a href="/archive">🗓 归档</a></li>
+        <li><a href="/tags">🏷 标签</a></li>
+        <li><a href="/about">👤 关于</a></li>
+        <li><a href="/friends">🔗 友链</a></li>
+        <li><a href="/travel">🗺 足迹</a></li>
+    </ul>
+</div>
