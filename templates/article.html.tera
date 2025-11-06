@@ -5,7 +5,6 @@
 {% block content %}
     <h1>{{ title }}</h1>
     <div class="article-content">
-        <!-- 渲染转换后的 HTML -->
         {{ article_html | safe }}
     </div>
 {% endblock %}

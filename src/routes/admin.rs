@@ -1,179 +1,210 @@
 use rocket_dyn_templates::Template;
 use rocket::response::Redirect;
-use rocket_session::Session;
 use rocket_dyn_templates::context;
 use rocket::{get, post, form::Form, State};
 use crate::db;
-use crate::models::{Article, Tag};
+use crate::models::{UserLoginForm, NewArticleForm, NewTagForm, User as UserModel};
 use sqlx::PgPool;
+use crate::auth::jwt::{create_token, validate_token, JWTConfig};
+use rocket::request::{self, FromRequest, Request};
+use rocket::http::Status;
+use rocket::outcome::Outcome;
+use rocket::serde::json::Json;
+use rocket::serde::Serialize;
 
-#[derive(Default)]
-struct SessionData {
-    admin: Option<bool>,
+//------------------------------------
+// AdminGuard: JWT + 数据库验证管理员
+//------------------------------------
+pub struct AdminGuard(pub UserModel);
+
+#[derive(Serialize)]
+struct ArticleJson {
+    id: i32,
+    title: String,
+    content_md: String,
+    created_at: String,
 }
 
-#[derive(FromForm)]
-pub struct LoginForm {
-    pub username: String,
-    pub password: String,
+#[get("/articles_data")]
+pub async fn articles_data(_admin: AdminGuard, pool: &State<PgPool>) -> Json<Vec<ArticleJson>> {
+    let articles = db::get_all_articles(pool.inner()).await.unwrap_or_default();
+    
+    // 转换成前端可序列化结构，并处理 Option<NaiveDateTime>
+    let data: Vec<ArticleJson> = articles.into_iter().map(|a| ArticleJson {
+        id: a.id,
+        title: a.title,
+        content_md: a.content_md,
+        created_at: a.created_at
+            .map(|dt| dt.format("%Y-%m-%d %H:%M:%S").to_string())
+            .unwrap_or_else(|| "未知时间".to_string()),
+    }).collect();
+
+    Json(data)
 }
 
-#[get("/login")]
-pub fn login_page() -> Template {
-    // 渲染登录页面
-    Template::render("admin/login", ())
-}
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for AdminGuard {
+    type Error = &'static str;
 
-#[post("/login", data = "<form>")]
-pub async fn login(form: Form<LoginForm>, mut session: Session<'_, SessionData>) -> Redirect {
-    let login_data = form.into_inner();
+    async fn from_request(req: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+        let jwt_config = match req.rocket().state::<JWTConfig>() {
+            Some(config) => config,
+            None => {
+                eprintln!("JWTConfig not configured");
+                return Outcome::Error((Status::InternalServerError, "JWT config not configured"));
+            }
+        };
+        
+        let pool = match req.rocket().state::<PgPool>() {
+            Some(pool) => pool,
+            None => {
+                eprintln!("PgPool not configured");
+                return Outcome::Error((Status::InternalServerError, "Database pool not configured"));
+            }
+        };
 
-    if login_data.username == "Jiao" && login_data.password == "060628" {
-        session.tap(|data| {
-            data.admin = Some(true);
-        });
+        let token = match req.headers().get_one("Authorization").and_then(|h| h.strip_prefix("Bearer ")) {
+            Some(t) => t,
+            None => return Outcome::Error((Status::Unauthorized, "Missing token")),
+        };
 
-        Redirect::to("/admin/dashboard")
-    } else {
-        Redirect::to("/login") 
+        let claims = match validate_token(token, jwt_config) {
+            Ok(c) => c,
+            Err(_) => return Outcome::Error((Status::Unauthorized, "Invalid token")),
+        };
+
+        let user = match sqlx::query_as::<_, UserModel>(
+            r#"SELECT * FROM "user" WHERE id = $1 AND role = 'admin'"#
+        )
+        .bind(claims.sub)
+        .fetch_optional(pool)
+        .await
+        {
+            Ok(Some(u)) => u,
+            Ok(None) => return Outcome::Error((Status::Unauthorized, "Not an admin")),
+            Err(e) => {
+                eprintln!("Database error: {}", e);
+                return Outcome::Error((Status::InternalServerError, "Database error"));
+            }
+        };
+
+        Outcome::Success(AdminGuard(user))
     }
 }
 
-#[get("/logout")]
-pub fn logout(mut session: Session<'_, SessionData>) -> Redirect {
-    session.tap(|data| {
-        data.admin = None;
-    });
-
-    Redirect::to("/login")
+//------------------------------------
+// 管理员登录页面
+//------------------------------------
+#[get("/login")]
+pub fn login_page() -> Template {
+    Template::render("admin/login", context! {})
 }
 
-// 获取文章列表
-#[get("/articles")]
-pub async fn articles_page(pool: &State<PgPool>) -> Template {
-    let articles = match db::get_all_articles(&pool).await {
-        Ok(articles) => articles,
-        Err(_) => vec![],
+//------------------------------------
+// 管理员登录（返回 JWT）
+//------------------------------------
+#[post("/login", data = "<form>")]
+pub async fn admin_login(
+    form: Form<UserLoginForm>,
+    pool: &State<PgPool>,
+    jwt_config: &State<JWTConfig>,
+) -> Result<String, Status> {
+    let login = form.into_inner();
+
+    let user = sqlx::query_as::<_, UserModel>(r#"SELECT * FROM "user" WHERE username = $1 AND role = 'admin'"#)
+        .bind(&login.username)
+        .fetch_optional(pool.inner())
+        .await
+        .map_err(|e| {
+            eprintln!("Database error: {}", e);
+            Status::InternalServerError
+        })?;
+
+    let user = match user {
+        Some(u) if u.password == login.password => u, // 生产环境建议 hash + salt
+        _ => return Err(Status::Unauthorized),
     };
+
+    let token = create_token(user.id, jwt_config.inner());
+    Ok(token)
+}
+
+//------------------------------------
+// Dashboard
+//------------------------------------
+#[get("/dashboard")]
+pub async fn dashboard(_admin: AdminGuard) -> Template {
+    Template::render("admin/dashboard", context! {})
+}
+
+//------------------------------------
+// 文章管理
+//------------------------------------
+#[get("/articles")]
+pub async fn articles_page(_admin: AdminGuard, pool: &State<PgPool>) -> Template {
+    let articles = db::get_all_articles(pool.inner()).await.unwrap_or_default();
     Template::render("admin/articles", context! { articles })
 }
 
-// 渲染文章创建页面
 #[get("/articles/new")]
-pub async fn new_article_page(pool: &State<PgPool>) -> Template {
-    let tags = match db::get_all_tags(&pool).await {
-        Ok(tags) => tags,
-        Err(_) => vec![],
-    };
+pub async fn new_article_page(_admin: AdminGuard, pool: &State<PgPool>) -> Template {
+    let tags = db::get_all_tags(pool.inner()).await.unwrap_or_default();
     Template::render("admin/new_article", context! { tags })
 }
 
-// 处理文章创建请求
 #[post("/articles", data = "<form>")]
-pub async fn create_article(form: Form<NewArticleForm>, pool: &State<PgPool>) -> Redirect {
+pub async fn create_article(_admin: AdminGuard, form: Form<NewArticleForm>, pool: &State<PgPool>) -> Redirect {
     let NewArticleForm { title, content_md, tag_ids } = form.into_inner();
-    let tag_ids: Vec<i32> = tag_ids.iter().map(|id| *id).collect();
-
-    if let Err(_) = db::create_article(&pool, &title, &content_md, &tag_ids).await {
-        // 错误处理
-        return Redirect::to("/admin/articles");
-    }
-
+    let _ = db::create_article(pool.inner(), &title, &content_md, &tag_ids).await;
     Redirect::to("/admin/articles")
 }
 
-// 渲染编辑页面
 #[get("/articles/<id>/edit")]
-pub async fn edit_article_page(id: i32, pool: &State<PgPool>) -> Template {
-    let article = match db::get_article_by_id(id, &pool).await {
-        Ok(article) => article,
-        Err(_) => {
-            return Template::render("error", context! { message: "文章不存在" });
-        }
+pub async fn edit_article_page(_admin: AdminGuard, id: i32, pool: &State<PgPool>) -> Template {
+    let article = match db::get_article_by_id(id, pool.inner()).await {
+        Ok(a) => a,
+        Err(_) => return Template::render("error", context! { message: "文章不存在" }),
     };
-    let tags = match db::get_all_tags(&pool).await {
-        Ok(tags) => tags,
-        Err(_) => vec![],
-    };
-    Template::render("admin/edit_article", context! {
-        article,
-        tags
-    })
+    let tags = db::get_all_tags(pool.inner()).await.unwrap_or_default();
+    Template::render("admin/edit_article", context! { article, tags })
 }
 
-// 处理文章更新请求
 #[post("/articles/<id>", data = "<form>")]
-pub async fn update_article(id: i32, form: Form<NewArticleForm>, pool: &State<PgPool>) -> Redirect {
+pub async fn update_article(_admin: AdminGuard, id: i32, form: Form<NewArticleForm>, pool: &State<PgPool>) -> Redirect {
     let NewArticleForm { title, content_md, tag_ids } = form.into_inner();
-    let tag_ids: Vec<i32> = tag_ids.iter().map(|id| *id).collect();
-
-    if let Err(_) = db::update_article(&pool, id, &title, &content_md, &tag_ids).await {
-        return Redirect::to("/admin/articles");
-    }
-
+    let _ = db::update_article(pool.inner(), id, &title, &content_md, &tag_ids).await;
     Redirect::to("/admin/articles")
 }
 
-// 删除文章
 #[post("/articles/<id>/delete")]
-pub async fn delete_article(id: i32, pool: &State<PgPool>) -> Redirect {
-    if let Err(_) = db::delete_article(&pool, id).await {
-        return Redirect::to("/admin/articles");
-    }
-
+pub async fn delete_article(_admin: AdminGuard, id: i32, pool: &State<PgPool>) -> Redirect {
+    let _ = db::delete_article(pool.inner(), id).await;
     Redirect::to("/admin/articles")
 }
 
-// 用于处理创建和更新文章的表单结构
-#[derive(FromForm)]
-pub struct NewArticleForm {
-    pub title: String,
-    pub content_md: String,
-    pub tag_ids: Vec<i32>,  // 多个标签ID
-}
-
-// 显示标签管理页面
+//------------------------------------
+// 标签管理
+//------------------------------------
 #[get("/tags")]
-pub async fn tags_page(pool: &State<PgPool>) -> Template {
-    let tags = match db::get_all_tags(&pool).await {
-        Ok(tags) => tags,
-        Err(_) => vec![],
-    };
+pub async fn tags_page(_admin: AdminGuard, pool: &State<PgPool>) -> Template {
+    let tags = db::get_all_tags(pool.inner()).await.unwrap_or_default();
     Template::render("admin/tags", context! { tags })
 }
 
-// 渲染创建标签页面
 #[get("/tags/new")]
-pub fn new_tag_page() -> Template {
-    Template::render("admin/new_tag", ())
+pub async fn new_tag_page(_admin: AdminGuard) -> Template {
+    Template::render("admin/new_tag", context! {})
 }
 
-// 处理标签创建请求
 #[post("/tags", data = "<form>")]
-pub async fn create_tag(form: Form<NewTagForm>, pool: &State<PgPool>) -> Redirect {
+pub async fn create_tag(_admin: AdminGuard, form: Form<NewTagForm>, pool: &State<PgPool>) -> Redirect {
     let new_tag = form.into_inner();
-
-    if let Err(_) = db::create_tag(&pool, &new_tag.name).await {
-        // 错误处理：如果创建失败，重定向到标签页面
-        return Redirect::to("/admin/tags");
-    }
-
-    Redirect::to("/admin/tags")  // 标签创建成功后，返回标签管理页面
-}
-
-// 删除标签
-#[post("/tags/<id>/delete")]
-pub async fn delete_tag(id: i32, pool: &State<PgPool>) -> Redirect {
-    if let Err(_) = db::delete_tag(&pool, id).await {
-        return Redirect::to("/admin/tags");
-    }
-
+    let _ = db::create_tag(pool.inner(), &new_tag.name).await;
     Redirect::to("/admin/tags")
 }
 
-
-// 用于处理创建标签的表单结构
-#[derive(FromForm)]
-pub struct NewTagForm {
-    pub name: String,  // 标签名称
+#[post("/tags/<id>/delete")]
+pub async fn delete_tag(_admin: AdminGuard, id: i32, pool: &State<PgPool>) -> Redirect {
+    let _ = db::delete_tag(pool.inner(), id).await;
+    Redirect::to("/admin/tags")
 }

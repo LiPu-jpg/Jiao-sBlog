@@ -1,0 +1,47 @@
+{% extends "base" %}
+
+{% block title %}后台首页{% endblock %}
+
+{% block content %}
+<h1>欢迎来到后台管理</h1>
+
+<h2>文章列表</h2>
+<ul id="articles-list">加载中...</ul>
+
+<script>
+async function loadArticles() {
+    const token = localStorage.getItem("token"); // 登录时保存的 JWT
+    if (!token) {
+        alert("请先登录！");
+        window.location.href = "/admin/login";
+        return;
+    }
+
+    try {
+        const res = await fetch("/admin/articles_data", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+            alert("获取文章列表失败！");
+            return;
+        }
+
+        const articles = await res.json();
+        const list = document.getElementById("articles-list");
+        if (articles.length === 0) {
+            list.innerHTML = "<li>暂无文章</li>";
+        } else {
+            list.innerHTML = articles.map(a => `<li>${a.title}</li>`).join("");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("网络错误，请稍后再试。");
+    }
+}
+
+window.onload = loadArticles;
+</script>
+{% endblock %}

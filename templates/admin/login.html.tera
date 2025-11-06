@@ -1,18 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>管理员登录</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
+    <h1>管理员登录</h1>
+    <form id="login-form">
+        <label for="username">用户名:</label>
         <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
+        <label for="password">密码:</label>
         <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Login">
+        <input type="submit" value="登录">
     </form>
+
+    <p id="message" style="color:red;"></p>
+
+    <script>
+        const form = document.getElementById("login-form");
+        const message = document.getElementById("message");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const body = new URLSearchParams(formData);
+
+            try {
+                const response = await fetch("/admin/login", {
+                    method: "POST",
+                    body
+                });
+
+                if (response.ok) {
+                    const token = await response.text();
+                    // 保存 JWT
+                    localStorage.setItem("token", token);
+                    // 跳转到后台首页
+                    window.location.href = "/admin/dashboard";
+                } else {
+                    message.textContent = "登录失败，请检查用户名或密码。";
+                }
+            } catch (err) {
+                message.textContent = "网络错误，请稍后再试。";
+                console.error(err);
+            }
+        });
+    </script>
 </body>
 </html>

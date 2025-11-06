@@ -5,43 +5,32 @@ edition = "2021"
 
 [dependencies]
 # Rocket 框架
-rocket = { version = "0.5.1", features = ["json", "secrets", "tls"] }
+rocket = { version = "0.5.1", features = ["json"] }
 
-# Rocket 动态模板支持 Tera
-rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }
+rocket_dyn_templates = { version = "0.1", features = ["tera"] }
 
-# 数据库支持：PostgreSQL
-rocket_db_pools = { version = "0.2.0", features = ["sqlx_postgres"] }
-sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "runtime-tokio", "postgres", "macros", "chrono", "bigdecimal"] }
+# 数据库支持 - 添加 bigdecimal 特性
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "macros", "chrono", "bigdecimal"] }
 
 # 序列化支持
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # 环境变量支持
-dotenvy = "0.15" 
+dotenvy = "0.15"
 
 # 异步支持
 tokio = { version = "1", features = ["full"] }
 
-# Markdown 渲染支持
-pulldown-cmark = "0.13.0"
+# Markdown 渲染
+pulldown-cmark = "0.9"
 
-# 日期/时间处理
-chrono = { version = "0.4.42", features = ["serde"] }
+# 日期时间处理
+chrono = { version = "0.4", features = ["serde"] }
 
-# 环境变量加载
-dotenv = "0.15"
+# JWT 支持
+jsonwebtoken = "7.2"
 
-# 大数支持
-bigdecimal = "0.4.9"
-
-# 数字计算支持
+# 添加缺失的依赖
 num-traits = "0.2"
-
-# 会话管理
-rocket_session = "0.4.0"
-
-
-[global.databases]
-postgres_db = { url = "postgres://bloguser:060628@localhost:5432/blog" }
+bigdecimal = "0.4"
