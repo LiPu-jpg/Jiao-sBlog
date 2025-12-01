@@ -5,3 +5,7 @@ log_level = "normal"
 
 [default.databases]
 blog_db = { url = "postgres://postgres:060628@localhost:5432/blog" }
+
+[default.tls]
+certs = "cert.pem"
+key = "key.pem"

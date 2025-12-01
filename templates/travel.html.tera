@@ -5,9 +5,62 @@
 <h1>🗺 我的旅行足迹</h1>
 <p>在这里，我记录了自己走过的城市和国家，留下美好的旅行回忆。</p>
 
-<!-- jvectormap 插入点 -->
-<div id="map" style="height: 400px;"></div>
+<!-- 地图容器 -->
+<div id="container" style="width:100%; height:600px; border-radius:12px; overflow:hidden;"></div>
+
 <script>
-    // 此处插入 jvectormap 初始化代码
+// 初始化函数
+function init() {
+    var map = new BMapGL.Map("container");
+    var center = new BMapGL.Point(116.404, 39.915);
+    map.centerAndZoom(center, 5);
+    map.enableScrollWheelZoom(true);
+
+    fetch("/static/foots.json")
+        .then(r => r.json())
+        .then(data => {
+            data.forEach(e => {
+                let point = new BMapGL.Point(e.latLng[0], e.latLng[1]);
+                let marker;
+
+                if (e.icon) {
+                    let myIcon = new BMapGL.Icon(e.icon, new BMapGL.Size(26,26));
+                    marker = new BMapGL.Marker(point, { icon: myIcon });
+                } else {
+                    marker = new BMapGL.Marker(point);
+                }
+
+                map.addOverlay(marker);
+
+                let content = "";
+                if (e.photo) {
+                    content += "<div style='display:flex;flex-wrap:wrap;'>";
+                    e.photo.forEach(p => {
+                        content += `<img src="${p}" style="width:48%; margin:2px; border-radius:6px;">`;
+                    });
+                    content += "</div>";
+                }
+                content += `<p style='padding:8px 0;'>${e.desc ?? ""}</p>`;
+
+                let infoWindow = new BMapGL.InfoWindow(content, {
+                    width: 320,
+                    title: e.name
+                });
+
+                marker.addEventListener("click", () => {
+                    map.openInfoWindow(infoWindow, point);
+                });
+            });
+        });
+}
+
+// 异步加载百度地图
+(function loadScript(){
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "//api.map.baidu.com/api?type=webgl&v=1.0&ak=1MRi7rLmltAZS399xnqlRxjAHtZ3uPRa&callback=init";
+    document.body.appendChild(script);
+})();
 </script>
+
 {% endblock content %}

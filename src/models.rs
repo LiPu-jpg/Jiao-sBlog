@@ -11,6 +11,7 @@ pub struct Article {
     pub content_md: String,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
+    pub tags: Vec<i32>, 
 }
 
 // 标签模型
@@ -20,12 +21,7 @@ pub struct Tag {
     pub name: String,
 }
 
-// 文章-标签关联模型
-#[derive(FromRow, Debug)]
-pub struct ArticleTag {
-    pub article_id: i32,
-    pub tag_id: i32,
-}
+
 
 // 用户模型 - 用于认证
 #[derive(FromRow, Debug, Serialize, Clone)]
@@ -57,7 +53,7 @@ pub struct NewArticleForm {
 pub struct NewTagForm {
     pub name: String,
 }
-
+/*
 // 文章详情视图模型（包含标签信息）
 #[derive(Debug, Serialize)]
 pub struct ArticleWithTags {
@@ -85,3 +81,11 @@ pub struct ArchiveEntry {
     pub count: i64,
     pub articles: Vec<Article>,
 }
+
+// 文章-标签关联模型
+#[derive(FromRow, Debug)]
+pub struct ArticleTag {
+    pub article_id: i32,
+    pub tag_id: i32,
+}
+*/

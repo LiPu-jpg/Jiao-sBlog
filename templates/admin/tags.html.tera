@@ -1,3 +1,8 @@
+{% extends "admin_base" %}
+
+{% block title %}标签管理{% endblock %}
+
+{% block content %}
 <h2>标签管理</h2>
 <table>
     <thead>
@@ -11,8 +16,7 @@
             <tr>
                 <td>{{ tag.name }}</td>
                 <td>
-                    <!-- 这里可以加编辑或删除按钮 -->
-                    <form action="/admin/tags/{{ tag.id }}/delete" method="post" style="display:inline;">
+                    <form action="/admin/tags/{{ tag.id }}/delete" method="post">
                         <button type="submit">删除</button>
                     </form>
                 </td>
@@ -21,3 +25,4 @@
     </tbody>
 </table>
 <a href="/admin/tags/new">创建新标签</a>
+{% endblock %}

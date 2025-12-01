@@ -10,8 +10,10 @@
     <form id="login-form">
         <label for="username">用户名:</label>
         <input type="text" id="username" name="username" required><br><br>
+
         <label for="password">密码:</label>
         <input type="password" id="password" name="password" required><br><br>
+
         <input type="submit" value="登录">
     </form>
 
@@ -30,14 +32,12 @@
             try {
                 const response = await fetch("/admin/login", {
                     method: "POST",
-                    body
+                    body,
+                    credentials: "include" // 🔥 让浏览器自动包含 Cookie
                 });
 
                 if (response.ok) {
-                    const token = await response.text();
-                    // 保存 JWT
-                    localStorage.setItem("token", token);
-                    // 跳转到后台首页
+                    // 登录成功，不需要保存 JWT
                     window.location.href = "/admin/dashboard";
                 } else {
                     message.textContent = "登录失败，请检查用户名或密码。";

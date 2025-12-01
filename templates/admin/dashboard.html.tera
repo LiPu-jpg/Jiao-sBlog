@@ -1,4 +1,4 @@
-{% extends "base" %}
+{% extends "admin_base" %}
 
 {% block title %}后台首页{% endblock %}
 
@@ -10,19 +10,16 @@
 
 <script>
 async function loadArticles() {
-    const token = localStorage.getItem("token"); // 登录时保存的 JWT
-    if (!token) {
-        alert("请先登录！");
-        window.location.href = "/admin/login";
-        return;
-    }
-
     try {
         const res = await fetch("/admin/articles_data", {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            credentials: "include"
         });
+
+        if (res.status === 401) {
+            alert("请先登录！");
+            window.location.href = "/admin/login";
+            return;
+        }
 
         if (!res.ok) {
             alert("获取文章列表失败！");
@@ -31,6 +28,7 @@ async function loadArticles() {
 
         const articles = await res.json();
         const list = document.getElementById("articles-list");
+
         if (articles.length === 0) {
             list.innerHTML = "<li>暂无文章</li>";
         } else {

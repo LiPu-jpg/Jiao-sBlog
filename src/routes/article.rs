@@ -9,7 +9,6 @@ pub async fn article(id: i32, pool: &State<PgPool>) -> Template {
     let article = match db::get_article_by_id(id, &pool).await {
         Ok(article) => article,
         Err(_) => {
-            // 如果文章不存在，返回一个错误页面或默认处理
             return Template::render("error", context! {
                 message: "文章不存在"
             });
@@ -21,10 +20,10 @@ pub async fn article(id: i32, pool: &State<PgPool>) -> Template {
     let mut html_content = String::new();
     pulldown_cmark::html::push_html(&mut html_content, parser);
 
-    // 渲染模板并传递文章内容和其他必要的参数
+    // 传递给模板的上下文要和模板里变量名一致
     Template::render("article", context! {
         title: &article.title,
-        article: &article, // 传递引用，避免移动
-        content_html: html_content, // 传递已渲染的 HTML 内容
+        article: &article,
+        article_html: html_content,
     })
 }

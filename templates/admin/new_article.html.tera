@@ -1,3 +1,8 @@
+{% extends "admin_base" %}
+
+{% block title %}创建新文章{% endblock %}
+
+{% block content %}
 <h2>创建新文章</h2>
 <form action="/admin/articles" method="post">
     <div>
@@ -18,3 +23,4 @@
     </div>
     <button type="submit">提交</button>
 </form>
+{% endblock %}

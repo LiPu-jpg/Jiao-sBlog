@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 # Rocket 框架
-rocket = { version = "0.5.1", features = ["json"] }
+rocket = { version = "0.5.1", features = ["json","tls"] }
 
 rocket_dyn_templates = { version = "0.1", features = ["tera"] }
 
@@ -28,9 +28,9 @@ pulldown-cmark = "0.9"
 # 日期时间处理
 chrono = { version = "0.4", features = ["serde"] }
 
-# JWT 支持
-jsonwebtoken = "7.2"
 
 # 添加缺失的依赖
 num-traits = "0.2"
 bigdecimal = "0.4"
+
+uuid = { version = "1", features = ["v4"] }

@@ -1,3 +1,8 @@
+{% extends "admin_base" %}
+
+{% block title %}文章管理{% endblock %}
+
+{% block content %}
 <h2>文章列表</h2>
 <table>
     <thead>
@@ -14,7 +19,7 @@
                 <td>{{ article.created_at }}</td>
                 <td>
                     <a href="/admin/articles/{{ article.id }}/edit">编辑</a>
-                    <form action="/admin/articles/{{ article.id }}/delete" method="post" style="display:inline;">
+                    <form action="/admin/articles/{{ article.id }}/delete" method="post">
                         <button type="submit">删除</button>
                     </form>
                 </td>
@@ -23,3 +28,4 @@
     </tbody>
 </table>
 <a href="/admin/articles/new">创建新文章</a>
+{% endblock %}

@@ -1,16 +1,27 @@
+{% extends "admin_base" %}
+
+{% block title %}编辑文章{% endblock %}
+
+{% block content %}
 <h2>编辑文章</h2>
 <form action="/admin/articles/{{ article.id }}" method="post">
     <div>
         <label for="title">标题</label>
         <input type="text" id="title" name="title" value="{{ article.title }}" required>
     </div>
+
     <div>
         <label for="content_md">内容</label>
         <textarea id="content_md" name="content_md" required>{{ article.content_md }}</textarea>
     </div>
+
     <div>
         <label for="tags">选择标签</label>
-        <select name="tag_ids" multiple>
+        <div id="tag-container" style="border: 1px solid #ccc; padding: 5px; min-height: 50px; cursor: text;">
+            <!-- 已选标签 -->
+        </div>
+        <input type="text" id="tag-input" placeholder="输入标签名回车添加" style="width: 100%; margin-top: 5px;">
+        <select id="tag-select" multiple style="display:none;">
             {% for tag in tags %}
                 <option value="{{ tag.id }}" {% if tag.id in article.tag_ids %} selected {% endif %}>
                     {{ tag.name }}
@@ -18,5 +29,55 @@
             {% endfor %}
         </select>
     </div>
-    <button type="submit">更新</button>
+
+    <button type="submit" style="margin-top:10px;">更新</button>
 </form>
+
+<script>
+const tagContainer = document.getElementById('tag-container');
+const tagSelect = document.getElementById('tag-select');
+const tagInput = document.getElementById('tag-input');
+
+// 初始化显示已选标签
+function renderTags() {
+    tagContainer.innerHTML = '';
+    Array.from(tagSelect.options).forEach(opt => {
+        if (opt.selected) {
+            const span = document.createElement('span');
+            span.textContent = opt.text;
+            span.dataset.value = opt.value;
+            span.style.cssText = 'display:inline-block;background:#007bff;color:white;padding:2px 6px;margin:2px;border-radius:4px;cursor:pointer;';
+            // 点击取消选择
+            span.addEventListener('click', () => {
+                opt.selected = false;
+                renderTags();
+            });
+            tagContainer.appendChild(span);
+        }
+    });
+}
+
+// 输入回车选择标签
+tagInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = tagInput.value.trim().toLowerCase();
+        if (!val) return;
+
+        // 查找对应 option
+        const opt = Array.from(tagSelect.options).find(o => o.text.toLowerCase() === val);
+        if (opt) {
+            opt.selected = true;
+            renderTags();
+            tagInput.value = '';
+        }
+    }
+});
+
+// 点击容器聚焦输入框
+tagContainer.addEventListener('click', () => tagInput.focus());
+
+// 初始化渲染
+renderTags();
+</script>
+{% endblock %}
