@@ -2,8 +2,34 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ title | default(value="My Blog") }}{% endblock title %}</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* 确保侧边栏和主内容区域的样式 */
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     {% include "components/sidebar" %}

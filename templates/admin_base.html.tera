@@ -4,61 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}后台管理{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
     <style>
-        body {
+        .admin-container {
             display: flex;
-            font-family: Arial, sans-serif;
-        }
-        nav {
-            width: 200px;
-            background-color: #f0f0f0;
-            padding: 20px;
-            box-sizing: border-box;
             min-height: 100vh;
+            background: var(--background-color);
         }
-        nav a {
+        
+        .admin-nav {
+            width: 250px;
+            background: var(--primary-color);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: var(--shadow-medium);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .admin-nav h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            border-left: none;
+            padding-left: 0;
+        }
+        
+        .admin-nav a {
             display: block;
-            margin: 10px 0;
+            color: white;
+            padding: 12px 16px;
+            margin-bottom: 8px;
             text-decoration: none;
-            color: #333;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
         }
-        nav a:hover {
-            text-decoration: underline;
+        
+        .admin-nav a:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            transform: translateX(5px);
         }
-        main {
+        
+        .admin-main {
             flex: 1;
-            padding: 20px;
+            margin-left: 250px;
+            padding: 40px;
+            background: var(--background-color);
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
         }
-        table, th, td {
-            border: 1px solid #aaa;
-        }
+        
         th, td {
-            padding: 8px;
+            padding: 15px;
             text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
-        button {
-            cursor: pointer;
+        
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
         }
-        form { display: inline; }
+        
+        tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-danger {
+            background: var(--accent-color);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .admin-nav {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .admin-main {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav>
-        <h2>后台管理</h2>
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/articles">文章管理</a>
-        <a href="/admin/tags">标签管理</a>
-        <form action="/admin/logout" method="post" style="margin-top: 20px;">
-            <button type="submit">登出</button>
-        </form>
-    </nav>
+    <div class="admin-container">
+        <nav class="admin-nav">
+            <h2>🎛️ 后台管理</h2>
+            <a href="/admin/dashboard">📊 Dashboard</a>
+            <a href="/admin/articles">📝 文章管理</a>
+            <a href="/admin/tags">🏷️ 标签管理</a>
+            <form action="/admin/logout" method="post" style="margin-top: 30px;">
+                <button type="submit" style="width: 100%; background: rgba(231, 76, 60, 0.8); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    🚪 登出
+                </button>
+            </form>
+        </nav>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+        <main class="admin-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>

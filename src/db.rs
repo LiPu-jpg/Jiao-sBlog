@@ -255,3 +255,26 @@ pub async fn create_pool(database_url: &str) -> Result<PgPool, sqlx::Error> {
         .connect(database_url)
         .await
 }
+
+// 根据 ID 获取单个标签
+pub async fn get_tag_by_id(pool: &PgPool, id: i32) -> Result<Tag, sqlx::Error> {
+    sqlx::query_as!(Tag, "SELECT id, name FROM tags WHERE id=$1", id)
+        .fetch_one(pool)
+        .await
+}
+
+// 获取某篇文章的完整标签列表
+pub async fn get_tags_by_article_id(pool: &PgPool, article_id: i32) -> Result<Vec<Tag>, sqlx::Error> {
+    sqlx::query_as!(
+        Tag,
+        r#"
+        SELECT t.id, t.name
+        FROM tags t
+        JOIN article_tags at ON t.id = at.tag_id
+        WHERE at.article_id = $1
+        "#,
+        article_id
+    )
+    .fetch_all(pool)
+    .await
+}

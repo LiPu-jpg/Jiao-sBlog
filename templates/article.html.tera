@@ -3,8 +3,46 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <div class="article-content">
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="margin-bottom: 15px;">{{ title }}</h1>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <span>📅 发布时间：{{ created_at | default(value="未知") }}</span>
+            {% if updated_at %}
+                <span style="margin-left: 20px;">🔄 更新时间：{{ updated_at }}</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="article-content" style="line-height: 1.8; font-size: 1.1rem;">
         {{ article_html | safe }}
     </div>
+    
+    {% if tags and tags | length > 0 %}
+        <div style="margin-top: 40px; padding: 20px; background: rgba(52, 152, 219, 0.1); border-radius: 12px; border-left: 4px solid #3498db;">
+            <h4 style="margin-bottom: 15px; color: #2c3e50;">🏷️ 文章标签</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for tag in tags %}
+                    <a href="/tags/{{ tag.id }}" style="display: inline-block; padding: 6px 12px; background: var(--secondary-color); color: white; border-radius: 20px; font-size: 0.9rem; text-decoration: none; transition: var(--transition);">
+                        {{ tag.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px; padding: 25px; background: rgba(149, 165, 166, 0.1); border-radius: 12px; text-align: center;">
+        <p style="margin-bottom: 15px; color: var(--text-secondary);">
+            如果您觉得这篇文章有价值，欢迎分享和讨论
+        </p>
+        <div>
+            <a href="/archive" style="margin: 0 10px; padding: 10px 20px; background: var(--secondary-color); color: white; border-radius: 20px; text-decoration: none; transition: var(--transition);">
+                📚 查看更多文章
+            </a>
+            <a href="/" style="margin: 0 10px; padding: 10px 20px; background: var(--primary-color); color: white; border-radius: 20px; text-decoration: none; transition: var(--transition);">
+                🏠 返回首页
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

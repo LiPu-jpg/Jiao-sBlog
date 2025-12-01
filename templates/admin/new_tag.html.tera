@@ -3,17 +3,47 @@
 {% block title %}创建新标签{% endblock %}
 
 {% block content %}
-<h2>创建新标签</h2>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>➕ 创建新标签</h2>
+    
+    {% if message is defined %}
+        <div class="message error" style="margin-bottom: 20px;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    <form action="/admin/tags" method="post">
+        <div class="form-group">
+            <label for="name">🏷️ 标签名称</label>
+            <input type="text" id="name" name="name" required 
+                   placeholder="请输入标签名称，如：技术、旅行、生活等"
+                   style="font-size: 1.1rem; padding: 15px;">
+            <div style="margin-top: 8px; color: var(--text-secondary); font-size: 0.9rem;">
+                建议使用简洁明了的中文名称，便于用户理解和搜索
+            </div>
+        </div>
 
-{% if message is defined %}
-<p style="color: red;">{{ message }}</p>
-{% endif %}
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button type="submit" class="btn" style="background: var(--secondary-color); padding: 12px 30px; font-size: 16px;">
+                💾 创建标签
+            </button>
+            <a href="/admin/tags" class="btn" style="background: var(--text-secondary); padding: 12px 30px; font-size: 16px; text-decoration: none;">
+                ❌ 取消
+            </a>
+        </div>
+    </form>
+</div>
 
-<form action="/admin/tags" method="post">
-    <div>
-        <label for="name">标签名称</label>
-        <input type="text" id="name" name="name" required>
+<div style="max-width: 600px; margin: 30px auto;">
+    <div style="padding: 20px; background: rgba(46, 204, 113, 0.1); border-radius: 12px; border-left: 4px solid #2ecc71;">
+        <h4 style="margin-bottom: 10px; color: #2c3e50;">💡 标签创建建议</h4>
+        <ul style="margin-left: 20px; color: var(--text-secondary); line-height: 1.8;">
+            <li>使用简洁的中文名称，避免过长</li>
+            <li>标签应该具有概括性，能准确描述文章内容</li>
+            <li>避免创建重复或过于相似的标签</li>
+            <li>建议标签数量控制在10-20个之间</li>
+            <li>常用标签示例：技术、教程、随笔、旅行、读书、生活</li>
+        </ul>
     </div>
-    <button type="submit">提交</button>
-</form>
+</div>
 {% endblock %}

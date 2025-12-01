@@ -2,7 +2,21 @@
 {% block title %}关于{% endblock title %}
 
 {% block content %}
-<h1>👤 关于我</h1>
-<p>你好，我是焦子昂。欢迎来到我的个人博客！</p>
-<p>在这个博客中，我会分享我的学习心得、技术文章、旅行经历等内容。</p>
+<div class="about-section card">
+    <h1>👤 关于我</h1>
+    <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+        <p>你好，我是焦子昂。欢迎来到我的个人博客！</p>
+        <p>在这个博客中，我会分享我的学习心得、技术文章、旅行经历等内容。这里是我记录生活、分享知识的小天地。</p>
+        <p>我相信知识的力量，也相信分享的价值。希望通过这个平台，能够与更多志同道合的朋友交流，共同成长。</p>
+        <div style="margin-top: 30px; padding: 20px; background: rgba(52, 152, 219, 0.1); border-radius: 12px; border-left: 4px solid #3498db;">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">💡 博客特色</h3>
+            <ul style="margin-left: 0; list-style: none;">
+                <li>📚 技术分享与心得</li>
+                <li>✈️ 旅行足迹记录</li>
+                <li>🎯 个人成长历程</li>
+                <li>🌟 生活感悟分享</li>
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock content %}

@@ -1,0 +1,72 @@
+{% extends "admin_base" %}
+
+{% block title %}标签管理{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2>🏷️ 标签管理</h2>
+        <a href="/admin/tags/new" class="btn" style="background: var(--secondary-color); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+            ➕ 创建新标签
+        </a>
+    </div>
+    
+    {% if tags | length > 0 %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60%;">标签名称</th>
+                        <th style="width: 20%;">文章数量</th>
+                        <th style="width: 20%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                        <tr>
+                            <td style="font-weight: 500;">
+                                <span style="display: inline-block; padding: 4px 12px; background: var(--secondary-color); color: white; border-radius: 15px; font-size: 0.9rem;">
+                                    {{ tag.name }}
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">
+                                {{ tag.article_count | default(value="0") }} 篇
+                            </td>
+                            <td>
+                                <form action="/admin/tags/{{ tag.id }}/delete" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-small btn-danger" 
+                                            onclick="return confirm('确定要删除这个标签吗？此操作不可撤销。')">
+                                        🗑️ 删除
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem;">
+            共 {{ tags | length }} 个标签
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🏷️</div>
+            <h3 style="margin-bottom: 15px;">暂无标签</h3>
+            <p>创建标签来更好地组织您的文章</p>
+            <a href="/admin/tags/new" class="btn" style="margin-top: 20px;">
+                ➕ 创建第一个标签
+            </a>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px; padding: 20px; background: rgba(241, 196, 15, 0.1); border-radius: 12px; border-left: 4px solid #f1c40f;">
+        <h4 style="margin-bottom: 10px; color: #2c3e50;">💡 标签使用提示</h4>
+        <ul style="margin-left: 20px; color: var(--text-secondary);">
+            <li>标签可以帮助读者快速找到相关内容</li>
+            <li>建议为每个标签分配3-5个相关标签</li>
+            <li>删除标签不会影响已发布的文章</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

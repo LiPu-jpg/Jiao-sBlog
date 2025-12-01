@@ -3,6 +3,115 @@
 {% block title %}首页 - 我的博客{% endblock title %}
 
 {% block content %}
-<h1>欢迎来到我的博客 🚀</h1>
-<p>这里是主页内容。</p>
+<div class="card" style="text-align: center; padding: 60px 40px; background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(155, 89, 182, 0.1) 100%);">
+    <div style="font-size: 4rem; margin-bottom: 30px;">🚀</div>
+    <h1 style="font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        欢迎来到我的博客
+    </h1>
+    <p style="font-size: 1.3rem; color: var(--text-secondary); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">
+        这里是我分享技术心得、生活感悟和旅行见闻的小天地
+    </p>
+    
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <a href="/archive" class="btn" style="background: var(--secondary-color); padding: 15px 30px; font-size: 1.1rem; text-decoration: none;">
+            📚 浏览文章
+        </a>
+        <a href="/about" class="btn" style="background: var(--primary-color); padding: 15px 30px; font-size: 1.1rem; text-decoration: none;">
+            👤 关于我
+        </a>
+        <a href="/travel" class="btn" style="background: #2ecc71; padding: 15px 30px; font-size: 1.1rem; text-decoration: none;">
+            🗺️ 我的足迹
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+    <div class="card">
+        <h3 style="display: flex; align-items: center; margin-bottom: 20px;">
+            <span style="margin-right: 10px;">📝</span>
+            最新文章
+        </h3>
+        <div id="recent-articles" style="color: var(--text-secondary);">
+            加载中...
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 style="display: flex; align-items: center; margin-bottom: 20px;">
+            <span style="margin-right: 10px;">🏷️</span>
+            热门标签
+        </h3>
+        <div id="popular-tags" style="color: var(--text-secondary);">
+            加载中...
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 style="display: flex; align-items: center; margin-bottom: 20px;">
+            <span style="margin-right: 10px;">📊</span>
+            博客统计
+        </h3>
+        <div style="line-height: 2;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>📚 文章总数:</span>
+                <span style="font-weight: bold; color: var(--secondary-color);">15+</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>🏷️ 标签数量:</span>
+                <span style="font-weight: bold; color: var(--secondary-color);">12</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>👁️ 访问次数:</span>
+                <span style="font-weight: bold; color: var(--secondary-color);">1,234</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>📅 运行天数:</span>
+                <span style="font-weight: bold; color: var(--secondary-color);">365</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 模拟加载最新文章和标签数据
+window.onload = function() {
+    // 模拟最新文章数据
+    const recentArticles = [
+        { title: "我的第一篇技术博客", url: "/article/1", date: "2024-01-15" },
+        { title: "旅行见闻：北京之行", url: "/article/2", date: "2024-01-10" },
+        { title: "学习心得：Rust语言入门", url: "/article/3", date: "2024-01-05" }
+    ];
+    
+    const articlesHtml = recentArticles.map(article => `
+        <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+            <a href="${article.url}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">
+                ${article.title}
+            </a>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">
+                ${article.date}
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('recent-articles').innerHTML = articlesHtml;
+    
+    // 模拟热门标签数据
+    const popularTags = [
+        { name: "技术", count: 8 },
+        { name: "旅行", count: 5 },
+        { name: "随笔", count: 4 },
+        { name: "生活", count: 3 }
+    ];
+    
+    const tagsHtml = popularTags.map(tag => `
+        <div style="display: inline-block; margin: 5px;">
+            <a href="/tags/${tag.name}" style="display: inline-block; padding: 6px 12px; background: var(--secondary-color); color: white; border-radius: 15px; font-size: 0.9rem; text-decoration: none;">
+                ${tag.name} (${tag.count})
+            </a>
+        </div>
+    `).join('');
+    
+    document.getElementById('popular-tags').innerHTML = tagsHtml;
+};
+</script>
 {% endblock content %}

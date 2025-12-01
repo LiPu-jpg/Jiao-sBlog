@@ -3,29 +3,72 @@
 {% block title %}文章管理{% endblock %}
 
 {% block content %}
-<h2>文章列表</h2>
-<table>
-    <thead>
-        <tr>
-            <th>标题</th>
-            <th>创建时间</th>
-            <th>操作</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for article in articles %}
-            <tr>
-                <td>{{ article.title }}</td>
-                <td>{{ article.created_at }}</td>
-                <td>
-                    <a href="/admin/articles/{{ article.id }}/edit">编辑</a>
-                    <form action="/admin/articles/{{ article.id }}/delete" method="post">
-                        <button type="submit">删除</button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="/admin/articles/new">创建新文章</a>
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2>📝 文章管理</h2>
+        <a href="/admin/articles/new" class="btn" style="background: var(--secondary-color); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+            ✍️ 创建新文章
+        </a>
+    </div>
+    
+    {% if articles | length > 0 %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">标题</th>
+                        <th style="width: 20%;">创建时间</th>
+                        <th style="width: 15%;">状态</th>
+                        <th style="width: 25%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                        <tr>
+                            <td style="font-weight: 500;">
+                                <a href="/article/{{ article.id }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                                    {{ article.title }}
+                                </a>
+                            </td>
+                            <td style="color: var(--text-secondary); font-size: 0.9rem;">
+                                {{ article.created_at }}
+                            </td>
+                            <td>
+                                <span style="padding: 4px 8px; background: #2ecc71; color: white; border-radius: 12px; font-size: 0.8rem;">
+                                    已发布
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/admin/articles/{{ article.id }}/edit" class="btn btn-small" style="background: var(--secondary-color); color: white; text-decoration: none;">
+                                        ✏️ 编辑
+                                    </a>
+                                    <form action="/admin/articles/{{ article.id }}/delete" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-small btn-danger" 
+                                                onclick="return confirm('确定要删除这篇文章吗？此操作不可撤销。')">
+                                            🗑️ 删除
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem;">
+            共 {{ articles | length }} 篇文章
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📝</div>
+            <h3 style="margin-bottom: 15px;">暂无文章</h3>
+            <p>开始创建您的第一篇文章吧！</p>
+            <a href="/admin/articles/new" class="btn" style="margin-top: 20px;">
+                ✍️ 创建第一篇文章
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -2,11 +2,33 @@
 {% block title %}足迹{% endblock title %}
 
 {% block content %}
-<h1>🗺 我的旅行足迹</h1>
-<p>在这里，我记录了自己走过的城市和国家，留下美好的旅行回忆。</p>
-
-<!-- 地图容器 -->
-<div id="container" style="width:100%; height:600px; border-radius:12px; overflow:hidden;"></div>
+<div class="card">
+    <h1>🗺 我的旅行足迹</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+        在这里，我记录了自己走过的城市和国家，留下美好的旅行回忆
+    </p>
+    
+    <!-- 地图容器 -->
+    <div id="container" style="width:100%; height:500px; border-radius:12px; overflow:hidden; box-shadow: var(--shadow-light);"></div>
+    
+    <div style="margin-top: 30px; padding: 25px; background: rgba(46, 204, 113, 0.1); border-radius: 12px; border-left: 4px solid #2ecc71;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">🌍 旅行统计</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: #2ecc71;">15+</div>
+                <div style="color: var(--text-secondary);">访问城市</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: #3498db;">8+</div>
+                <div style="color: var(--text-secondary);">国家/地区</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;">1000+</div>
+                <div style="color: var(--text-secondary);">旅行照片</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 // 初始化函数
@@ -15,6 +37,9 @@ function init() {
     var center = new BMapGL.Point(116.404, 39.915);
     map.centerAndZoom(center, 5);
     map.enableScrollWheelZoom(true);
+    map.setMapStyleV2({
+        styleId: '3d71d8b7f1f8d4b7f8d4b7f8d4b7f8d4'
+    });
 
     fetch("/static/foots.json")
         .then(r => r.json())
@@ -44,13 +69,20 @@ function init() {
 
                 let infoWindow = new BMapGL.InfoWindow(content, {
                     width: 320,
-                    title: e.name
+                    title: e.name,
+                    enableCloseOnClick: true,
+                    enableMessage: false
                 });
 
                 marker.addEventListener("click", () => {
                     map.openInfoWindow(infoWindow, point);
                 });
             });
+        })
+        .catch(error => {
+            console.error('加载足迹数据失败:', error);
+            document.getElementById('container').innerHTML = 
+                '<div style="display: flex; justify-content: center; align-items: center; height: 100%; color: #7f8c8d; font-size: 1.1rem;">地图数据加载中...</div>';
         });
 }
 
@@ -59,8 +91,11 @@ function init() {
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = "//api.map.baidu.com/api?type=webgl&v=1.0&ak=1MRi7rLmltAZS399xnqlRxjAHtZ3uPRa&callback=init";
+    script.onerror = function() {
+        document.getElementById('container').innerHTML = 
+            '<div style="display: flex; justify-content: center; align-items: center; height: 100%; color: #e74c3c;">地图加载失败，请检查网络连接</div>';
+    };
     document.body.appendChild(script);
 })();
 </script>
-
 {% endblock content %}

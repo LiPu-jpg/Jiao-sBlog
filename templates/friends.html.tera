@@ -2,11 +2,45 @@
 {% block title %}友链{% endblock title %}
 
 {% block content %}
-<h1>🔗 友情链接</h1>
-<p>以下是我推荐的友情链接：</p>
-
-<ul>
-    <li><a href="https://example.com" target="_blank">Example Blog</a></li>
-    <li><a href="https://another-example.com" target="_blank">Another Blog</a></li>
-</ul>
+<div class="card">
+    <h1>🔗 友情链接</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+        以下是我推荐的优秀博客和网站，欢迎访问交流
+    </p>
+    
+    <div class="friends-grid">
+        <div class="friend-item">
+            <h3>技术博客</h3>
+            <p><a href="https://example.com" target="_blank">Example Blog</a></p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">优质的技术分享平台</p>
+        </div>
+        
+        <div class="friend-item">
+            <h3>个人博客</h3>
+            <p><a href="https://another-example.com" target="_blank">Another Blog</a></p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">有趣的个人生活记录</p>
+        </div>
+        
+        <div class="friend-item">
+            <h3>开源项目</h3>
+            <p><a href="https://github.com" target="_blank">GitHub</a></p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">代码托管与协作平台</p>
+        </div>
+        
+        <div class="friend-item">
+            <h3>视频平台</h3>
+            <p><a href="https://bilibili.com" target="_blank">Bilibili</a></p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">视频分享社区</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; padding: 25px; background: rgba(231, 76, 60, 0.1); border-radius: 12px; border-left: 4px solid #e74c3c;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">🤝 友链交换</h3>
+        <p>如果您想与我交换友情链接，请通过以下方式联系我：</p>
+        <ul style="margin-top: 15px;">
+            <li>📧 邮箱：example@email.com</li>
+            <li>💬 留言：在任意文章下留言</li>
+        </ul>
+    </div>
+</div>
 {% endblock content %}

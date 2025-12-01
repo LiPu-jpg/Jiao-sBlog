@@ -3,24 +3,57 @@
 {% block title %}创建新文章{% endblock %}
 
 {% block content %}
-<h2>创建新文章</h2>
-<form action="/admin/articles" method="post">
-    <div>
-        <label for="title">标题</label>
-        <input type="text" id="title" name="title" required>
-    </div>
-    <div>
-        <label for="content_md">内容</label>
-        <textarea id="content_md" name="content_md" required></textarea>
-    </div>
-    <div>
-        <label for="tags">选择标签</label>
-        <select name="tag_ids" multiple>
-            {% for tag in tags %}
-                <option value="{{ tag.id }}">{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <button type="submit">提交</button>
-</form>
+<div class="card">
+    <h2>✍️ 创建新文章</h2>
+    
+    <form action="/admin/articles" method="post" style="max-width: 800px;">
+        <div class="form-group">
+            <label for="title">📄 文章标题</label>
+            <input type="text" id="title" name="title" required 
+                   placeholder="请输入文章标题" style="font-size: 1.1rem; padding: 15px;">
+        </div>
+
+        <div class="form-group">
+            <label for="content_md">✍️ 文章内容 (Markdown格式)</label>
+            <textarea id="content_md" name="content_md" required 
+                      placeholder="请输入文章内容，支持Markdown格式
+
+## 标题示例
+这里是正文内容，支持**粗体**、*斜体*等格式。
+
+### 代码示例
+```python
+def hello_world():
+    print("Hello, World!")
+```
+
+### 列表示例
+- 项目一
+- 项目二
+- 项目三"
+                      style="min-height: 400px; font-family: 'Courier New', monospace; line-height: 1.6;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">🏷️ 选择标签</label>
+            <select name="tag_ids" multiple style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; min-height: 120px;">
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}">{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            <div style="margin-top: 8px; color: var(--text-secondary); font-size: 0.9rem;">
+                按住 Ctrl/Cmd 键可以选择多个标签
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button type="submit" class="btn" style="background: var(--secondary-color); padding: 12px 30px; font-size: 16px;">
+                📤 发布文章
+            </button>
+            <a href="/admin/articles" class="btn" style="background: var(--text-secondary); padding: 12px 30px; font-size: 16px; text-decoration: none;">
+                ❌ 取消
+            </a>
+        </div>
+    </form>
+</div>
 {% endblock %}

@@ -3,12 +3,39 @@
 {% block title %}Tags - My Blog{% endblock %}
 
 {% block content %}
-    <h1>Tags</h1>
-    <ul>
-        {% for tag in tags %}
-            <li>
-                <a href="/tags/{{ tag.id }}">{{ tag.name }}</a>
-            </li>
-        {% endfor %}
-    </ul>
+<div class="card">
+    <h1>🏷 标签云</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+        通过标签快速找到感兴趣的文章内容
+    </p>
+    
+    {% if tags | length > 0 %}
+        <div class="tags-grid">
+            {% for tag in tags %}
+                <div class="tag-item" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 0; height: 0; border-left: 20px solid transparent; border-top: 20px solid var(--secondary-color);"></div>
+                    <a href="/tags/{{ tag.id }}" style="display: block; padding: 20px; text-decoration: none;">
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; color: var(--primary-color);">
+                            {{ tag.name }}
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                            查看相关文章
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🏷️</div>
+            <h3 style="margin-bottom: 15px;">暂无标签</h3>
+            <p>标签系统正在完善中，敬请期待！</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 40px; padding: 25px; background: rgba(241, 196, 15, 0.1); border-radius: 12px; border-left: 4px solid #f1c40f;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">💡 使用提示</h3>
+        <p>点击任意标签即可查看该分类下的所有文章。标签可以帮助您快速找到感兴趣的内容。</p>
+    </div>
+</div>
 {% endblock %}

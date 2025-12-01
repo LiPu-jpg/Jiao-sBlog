@@ -3,15 +3,68 @@
 {% block title %}Articles for Tag - My Blog{% endblock %}
 
 {% block content %}
-    <h1>Articles for Selected Tag</h1>
-    <ul>
-        {% for article in articles %}
-            <li>
-                <a href="/articles/{{ article.id }}">
-                    <h2>{{ article.title }}</h2>
-                    <p>{{ article.created_at }}</p>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+<div class="card">
+    <h1>🏷️ 标签文章</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+        以下是与当前标签相关的所有文章
+    </p>
+    
+    {% if articles | length > 0 %}
+        <div style="display: grid; gap: 20px;">
+            {% for article in articles %}
+                <div style="padding: 25px; background: rgba(255,255,255,0.8); border-radius: 12px; box-shadow: var(--shadow-light); transition: var(--transition);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                        <h3 style="margin: 0; font-size: 1.3rem;">
+                            <a href="/articles/{{ article.id }}" style="color: var(--primary-color); text-decoration: none;">
+                                {{ article.title }}
+                            </a>
+                        </h3>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap; margin-left: 15px;">
+                            {{ article.created_at }}
+                        </span>
+                    </div>
+                    
+                    {% if article.summary %}
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">
+                            {{ article.summary }}
+                        </p>
+                    {% endif %}
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: 10px;">
+                            {% if article.tags %}
+                                {% for tag in article.tags %}
+                                    <span style="padding: 4px 12px; background: var(--secondary-color); color: white; border-radius: 15px; font-size: 0.8rem;">
+                                        {{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <a href="/article/{{ article.id }}" class="btn" style="padding: 8px 16px; font-size: 0.9rem;">
+                            阅读全文 →
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📝</div>
+            <h3 style="margin-bottom: 15px;">暂无相关文章</h3>
+            <p>该标签下还没有文章，敬请期待！</p>
+            <a href="/" class="btn" style="margin-top: 20px;">
+                🏠 返回首页
+            </a>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 40px; text-align: center;">
+        <a href="/tags" class="btn" style="background: var(--primary-color); margin-right: 10px;">
+            ← 返回标签列表
+        </a>
+        <a href="/" class="btn" style="background: var(--text-secondary);">
+            🏠 返回首页
+        </a>
+    </div>
+</div>
 {% endblock %}

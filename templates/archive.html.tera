@@ -3,18 +3,48 @@
 {% block title %}Archive - My Blog{% endblock %}
 
 {% block content %}
-    <h1>文章归档</h1>
+<div class="card">
+    <h1>📚 文章归档</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+        按年份浏览所有文章，回顾精彩内容
+    </p>
+    
     <div class="archive">
         {% for year, articles in articles_grouped_by_year %}
-            <h2>{{ year }}年</h2>
-            <ul>
-                {% for article in articles %}
-                    <li>
-                        <a href="/article/{{ article.id }}">{{ article.title }}</a> 
-                        - {{ article.created_at }}
-                    </li>
-                {% endfor %}
-            </ul>
+            <div style="margin-bottom: 40px;">
+                <h2 style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <span style="margin-right: 10px;">📅</span>
+                    {{ year }}年
+                    <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
+                        {{ articles | length }} 篇文章
+                    </span>
+                </h2>
+                <ul style="list-style: none; margin-left: 0;">
+                    {% for article in articles %}
+                        <li style="margin-bottom: 15px; padding: 15px 20px; background: rgba(255,255,255,0.7); border-radius: 12px; box-shadow: var(--shadow-light); transition: var(--transition);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <a href="/article/{{ article.id }}" style="font-weight: 500; font-size: 1.1rem; color: var(--primary-color);">
+                                        {{ article.title }}
+                                    </a>
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap;">
+                                    {{ article.created_at }}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endfor %}
     </div>
+    
+    {% if articles_grouped_by_year | length == 0 %}
+        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📝</div>
+            <h3 style="margin-bottom: 15px;">暂无文章</h3>
+            <p>博客正在建设中，敬请期待更多精彩内容！</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
