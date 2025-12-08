@@ -7,43 +7,63 @@
     <h2>📝 编辑文章</h2>
     
     <form action="/admin/articles/{{ article.id }}" method="post" style="max-width: 800px;">
+
+        <!-- 标题 -->
         <div class="form-group">
             <label for="title">📄 文章标题</label>
-            <input type="text" id="title" name="title" value="{{ article.title }}" required 
-                   placeholder="请输入文章标题" style="font-size: 1.1rem; padding: 15px;">
+            <input type="text" id="title" name="title"
+                   value="{{ article.title }}"
+                   required
+                   style="font-size:1.1rem;padding:15px;">
         </div>
 
+        <!-- Markdown 内容 -->
         <div class="form-group">
-            <label for="content_md">✍️ 文章内容 (Markdown格式)</label>
-            <textarea id="content_md" name="content_md" required 
-                      placeholder="请输入文章内容，支持Markdown格式"
-                      style="min-height: 400px; font-family: 'Courier New', monospace; line-height: 1.6;">{{ article.content_md }}</textarea>
+            <label for="content_md">✍️ 文章内容 (Markdown)</label>
+            <textarea id="content_md" name="content_md" required
+                      style="min-height:400px;font-family:monospace;line-height:1.6;">
+{{ article.content_md }}
+            </textarea>
         </div>
 
+        <!-- 标签 -->
         <div class="form-group">
             <label for="tags">🏷️ 选择标签</label>
-            <div style="margin-bottom: 10px; color: var(--text-secondary); font-size: 0.9rem;">
-                点击标签可以取消选择，或在下拉框中选择
+            <div style="margin-bottom:10px;color:var(--text-secondary);font-size:0.9rem;">
+                点击标签取消选择，或在下拉框中选择
             </div>
-            <div id="tag-container" style="border: 2px solid var(--border-color); padding: 10px; min-height: 50px; border-radius: 8px; cursor: text; margin-bottom: 10px; background: white;">
-                <!-- 已选标签 -->
+
+            <!-- 已选显示 -->
+            <div id="tag-container"
+                 style="border:2px solid var(--border-color);padding:10px;min-height:50px;border-radius:8px;cursor:text;margin-bottom:10px;background:white;">
             </div>
-            <input type="text" id="tag-input" placeholder="输入标签名后按回车添加" 
-                   style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 10px;">
-            <select id="tag-select" multiple style="width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; display: block;">
+
+            <!-- 输入添加 -->
+            <input type="text" id="tag-input"
+                   placeholder="输入标签名后按回车添加"
+                   style="width:100%;padding:10px;border:2px solid var(--border-color);border-radius:8px;margin-bottom:10px;">
+
+            <!-- 下拉框 必须加 name -->
+            <select id="tag-select" name="tag_ids" multiple
+                    style="width:100%;padding:10px;border:2px solid var(--border-color);border-radius:8px;">
                 {% for tag in tags %}
-                    <option value="{{ tag.id }}" {% if tag.id in article.tag_ids %} selected {% endif %}>
-                        {{ tag.name }}
-                    </option>
+                <option value="{{ tag.id }}"
+                        {% if tag.id in article.tag_ids %}selected{% endif %}>
+                    {{ tag.name }}
+                </option>
                 {% endfor %}
             </select>
         </div>
 
-        <div style="display: flex; gap: 15px; margin-top: 30px;">
-            <button type="submit" class="btn" style="background: var(--secondary-color); padding: 12px 30px; font-size: 16px;">
+        <!-- 按钮 -->
+        <div style="display:flex;gap:15px;margin-top:30px;">
+            <button type="submit" class="btn"
+                style="background:var(--secondary-color);padding:12px 30px;font-size:16px;">
                 💾 更新文章
             </button>
-            <a href="/admin/articles" class="btn" style="background: var(--text-secondary); padding: 12px 30px; font-size: 16px; text-decoration: none;">
+
+            <a href="/admin/articles" class="btn"
+               style="background:var(--text-secondary);padding:12px 30px;font-size:16px;text-decoration:none;">
                 ❌ 取消
             </a>
         </div>
@@ -51,66 +71,66 @@
 </div>
 
 <script>
+// DOM
 const tagContainer = document.getElementById('tag-container');
-const tagSelect = document.getElementById('tag-select');
-const tagInput = document.getElementById('tag-input');
+const tagSelect    = document.getElementById('tag-select');
+const tagInput     = document.getElementById('tag-input');
 
-// 初始化显示已选标签
+// 渲染已选标签
 function renderTags() {
     tagContainer.innerHTML = '';
+
     Array.from(tagSelect.options).forEach(opt => {
-        if (opt.selected) {
-            const span = document.createElement('span');
-            span.textContent = opt.text;
-            span.dataset.value = opt.value;
-            span.style.cssText = 'display:inline-block;background:var(--secondary-color);color:white;padding:6px 12px;margin:4px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:var(--transition);';
-            // 点击取消选择
-            span.addEventListener('click', () => {
-                opt.selected = false;
-                renderTags();
-            });
-            tagContainer.appendChild(span);
-        }
+        if (!opt.selected) return;
+
+        const span = document.createElement('span');
+        span.textContent = opt.text;
+
+        span.style.cssText =
+            'display:inline-block;background:var(--secondary-color);color:white;' +
+            'padding:6px 12px;margin:4px;border-radius:20px;cursor:pointer;' +
+            'font-size:0.9rem;transition:var(--transition);';
+
+        // 点击取消
+        span.onclick = () => {
+            opt.selected = false;
+            renderTags();
+        };
+
+        tagContainer.appendChild(span);
     });
 }
 
-// 输入回车选择标签
-tagInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const val = tagInput.value.trim().toLowerCase();
-        if (!val) return;
+// 输入回车选择
+tagInput.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
 
-        // 查找对应 option
-        const opt = Array.from(tagSelect.options).find(o => o.text.toLowerCase() === val);
-        if (opt) {
-            opt.selected = true;
-            renderTags();
-            tagInput.value = '';
-        } else {
-            // 如果没有找到，提示用户
-            alert(`未找到标签 "${val}"，请从现有标签中选择或先创建新标签`);
-        }
+    e.preventDefault();
+
+    const val = tagInput.value.trim();
+    if (!val) return;
+
+    const opt = Array.from(tagSelect.options)
+        .find(o => o.text.toLowerCase() === val.toLowerCase());
+
+    if (!opt) {
+        alert(`未找到标签 "${val}"`);
+        return;
     }
+
+    opt.selected = true;
+    tagInput.value = '';
+    renderTags();
 });
 
-// 点击容器聚焦输入框
-tagContainer.addEventListener('click', () => tagInput.focus());
+// 点击已选区域聚焦输入
+tagContainer.onclick = () => tagInput.focus();
 
-// 下拉框变化时更新显示
-tagSelect.addEventListener('change', renderTags);
+// 下拉选择触发更新
+tagSelect.onchange = renderTags;
 
-// 初始化渲染
+// 初始渲染
 renderTags();
 
-// 表单提交前确保选择了标签
-form.addEventListener('submit', (e) => {
-    const selectedTags = Array.from(tagSelect.options).filter(opt => opt.selected);
-    if (selectedTags.length === 0) {
-        if (!confirm('您没有选择任何标签，确定要继续吗？')) {
-            e.preventDefault();
-        }
-    }
-});
 </script>
 {% endblock %}

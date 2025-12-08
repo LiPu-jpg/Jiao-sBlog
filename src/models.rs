@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::Serialize;
 use rocket::form::FromForm;
 
-// 文章模型
+/// 文章模型
 #[derive(FromRow, Debug, Serialize, Clone)]
 pub struct Article {
     pub id: i32,
@@ -11,19 +11,17 @@ pub struct Article {
     pub content_md: String,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
-    pub tags: Vec<i32>, 
+    pub tags: Vec<i32>,
 }
 
-// 标签模型
+/// 标签模型
 #[derive(FromRow, Debug, Serialize, Clone)]
 pub struct Tag {
     pub id: i32,
     pub name: String,
 }
 
-
-
-// 用户模型 - 用于认证
+/// 登录用户
 #[derive(FromRow, Debug, Serialize, Clone)]
 pub struct User {
     pub id: i32,
@@ -33,14 +31,14 @@ pub struct User {
     pub created_at: Option<NaiveDateTime>,
 }
 
-// 用户登录表单
+/// 登录表单
 #[derive(FromForm, Debug)]
 pub struct UserLoginForm {
     pub username: String,
     pub password: String,
 }
 
-// 新建文章表单
+/// 新文章表单
 #[derive(FromForm, Debug)]
 pub struct NewArticleForm {
     pub title: String,
@@ -48,13 +46,45 @@ pub struct NewArticleForm {
     pub tag_ids: Vec<i32>,
 }
 
-// 新建标签表单
+/// 新标签表单
 #[derive(FromForm, Debug)]
 pub struct NewTagForm {
     pub name: String,
 }
+
+
+/// 首页视图结构
+#[derive(FromRow, Debug, Serialize)]
+pub struct RecentArticleView {
+    pub id: i32,
+    pub title: String,
+    pub created_at: Option<NaiveDateTime>,
+}
+
+#[derive(FromRow, Debug, Serialize)]
+pub struct TagWithCount {
+    pub id: i32,
+    pub name: String,
+    pub article_count: Option<i64>,
+}
+
+
+#[derive(Debug, Serialize)]
+pub struct BlogStats {
+    pub article_count: i64,
+    pub tag_count: i64,
+    pub days_running: i64,
+    pub visit_count: i64,
+}
+
+
+#[derive(Debug, sqlx::FromRow)]
+pub struct SiteInfo {
+    pub created_at: chrono::NaiveDateTime,
+    pub visit_count: i64,
+}
+
 /*
-// 文章详情视图模型（包含标签信息）
 #[derive(Debug, Serialize)]
 pub struct ArticleWithTags {
     pub id: i32,
@@ -63,14 +93,6 @@ pub struct ArticleWithTags {
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
     pub tags: Vec<Tag>,
-}
-
-// 标签文章计数视图模型
-#[derive(FromRow, Debug, Serialize)]
-pub struct TagWithCount {
-    pub id: i32,
-    pub name: String,
-    pub article_count: i64,
 }
 
 // 归档条目视图模型
@@ -87,5 +109,4 @@ pub struct ArchiveEntry {
 pub struct ArticleTag {
     pub article_id: i32,
     pub tag_id: i32,
-}
-*/
+} */
